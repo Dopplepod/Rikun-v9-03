@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMCO IQ Recon V9</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <h1>SATS Reconciliation V9</h1>
+    <div class="sub">V9 keeps the SAP BFC side unchanged and fixes the OneStream GL-code path so OneStream amounts show correctly again. The reconciliation still compares both files at ERP / GL code level using the embedded mapping workbook.</div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h3>SAP BFC Raw Data</h3>
+      <div class="desc">Upload ERP to SAP BFC.xlsx</div>
+      <input id="sapFile" class="file-input" type="file" accept=".xlsx,.xls,.csv" />
+    </div>
+    <div class="card">
+      <h3>OneStream Raw Data</h3>
+      <div class="desc">Upload ERP to OS.xlsx</div>
+      <input id="osFile" class="file-input" type="file" accept=".xlsx,.xls,.csv" />
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="desc" style="margin-bottom:0">
+      Drilldown is now line-item based. Clicking a line item expands downward to the GL codes that belong to that line item from the mapping workbook.
+    </div>
+    <div class="actions">
+      <button id="runBtn" class="btn">Run reconciliation</button>
+      <label class="toggle-wrap"><input id="hideZeros" type="checkbox" checked> Hide Zero Lines</label>
+    </div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <section id="resultsPanel" class="panel" style="display:none">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title">Reconciliation output</div>
+        <div class="panel-sub">Generated from the uploaded raw files and the embedded V9 mapping workbook.</div>
+      </div>
+      <div class="badge">AMCO IQ</div>
+    </div>
+    <div class="panel-body">
+      <div class="meta-row">
+        <div class="meta"><div class="k">SAP rows</div><div id="metaSapRows" class="v">-</div></div>
+        <div class="meta"><div class="k">OS rows</div><div id="metaOsRows" class="v">-</div></div>
+        <div class="meta"><div class="k">GL codes</div><div id="metaGlCodes" class="v">-</div></div>
+        <div class="meta"><div class="k">Unmapped GL codes</div><div id="metaUnmapped" class="v">-</div></div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="summaryTab">Summary</button>
+        <button class="tab-btn" data-tab="drillTab">Drilldown</button>
+        <button class="tab-btn" data-tab="debugTab">Debug</button>
+      </div>
+
+      <div id="summaryTab" class="tab-pane active">
+        <div class="table-wrap"><table><thead><tr>
+          <th>Line item</th><th class="num">SAP BFC</th><th class="num">OneStream</th><th class="num">Difference</th>
+        </tr></thead><tbody id="summaryBody"></tbody></table></div>
+      </div>
+
+      <div id="drillTab" class="tab-pane">
+        <div class="section-note">Click a line item to expand and show the GL codes that belong to it. Revenue expands directly into GL codes.</div>
+        <div class="table-wrap"><table><thead><tr>
+          <th>Line item / GL code</th><th>Description</th><th>Currency</th><th class="num">SAP BFC</th><th class="num">OneStream</th><th class="num">Difference</th>
+        </tr></thead><tbody id="drillBody"></tbody></table></div>
+      </div>
+
+      <div id="debugTab" class="tab-pane">
+        <div class="section-note">Use this to review counts and any GL codes that did not land on a visible line item.</div>
+        <div id="debugBox" class="debug-box"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="overlay" class="overlay">
+  <div class="loader">
+    <div class="badge" style="margin:0 auto 16px">AMCO IQ</div>
+    <div class="loader-title">Processing</div>
+    <div class="loader-text">Running reconciliation...</div>
+    <div class="bar"><div></div></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
